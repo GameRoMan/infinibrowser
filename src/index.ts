@@ -1,0 +1,1 @@
+export { Infinibrowser } from './client';
