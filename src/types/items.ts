@@ -33,7 +33,7 @@ export type UseType = z.infer<typeof UseSchema>;
 
 export const UsesDataSchema = z.object({
 	total: z.number(),
-	recipes: z.array(RecipeSchema)
+	uses: z.array(UseSchema)
 });
 export type UsesDataType = z.infer<typeof UsesDataSchema>;
 

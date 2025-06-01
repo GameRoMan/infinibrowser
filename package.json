@@ -1,6 +1,6 @@
 {
   "name": "infinibrowser",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A TypeScript API wrapper for the Infinibrowser Wiki",
   "type": "module",
   "module": "dist/index.js",
@@ -16,7 +16,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir ./dist && bun x typescript --emitDeclarationOnly --declaration --outDir dist",
+    "build": "bun build ./src/index.ts --outdir ./dist",
     "prepublishOnly": "bun run build"
   },
   "keywords": [
