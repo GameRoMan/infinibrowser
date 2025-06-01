@@ -1,0 +1,4 @@
+entrypoints = ["src/index.ts"]
+outdir = "dist"
+target = "node"
+external = ["zod"]
