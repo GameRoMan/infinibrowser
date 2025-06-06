@@ -1,1 +1,1 @@
-export { Infinibrowser } from './client';
+export { Infinibrowser } from "./client";
