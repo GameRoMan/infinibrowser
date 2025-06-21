@@ -1,23 +1,21 @@
 {
   "name": "infinibrowser",
-  "version": "0.1.1",
-  "description": "A TypeScript API wrapper for the Infinibrowser Wiki",
+  "version": "0.1.2",
+  "description": "A TypeScript API wrapper for the Infinibrowser",
   "type": "module",
-  "module": "dist/index.js",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
     }
   },
   "files": [
-    "dist"
+    "src"
   ],
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir ./dist",
-    "prepublishOnly": "bun run build"
+    "build": "echo 'No build needed'"
   },
   "keywords": [
     "infinibrowser",
@@ -28,6 +26,7 @@
     "infinite",
     "craft",
     "infinite-craft",
+    "infinite craft",
     "browser",
     "database",
     "tools",
@@ -42,6 +41,6 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "zod": "^3.25.46"
+    "zod": "^3.25.76"
   }
 }
