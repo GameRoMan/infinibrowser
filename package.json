@@ -1,6 +1,6 @@
 {
   "name": "infinibrowser",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "A TypeScript API wrapper for the Infinibrowser",
   "type": "module",
   "main": "src/index.ts",
@@ -39,8 +39,5 @@
   },
   "peerDependencies": {
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "zod": "^3.25.76"
   }
 }
