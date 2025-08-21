@@ -2,34 +2,27 @@
   "compilerOptions": {
     // Environment setup & latest features
     "lib": ["ESNext", "DOM"],
-    "target": "ESNext",
-    "module": "Preserve",
+    "target": "esnext",
+    "module": "preserve",
     "moduleDetection": "force",
-    "jsx": "react-jsx",
 
     // Bundler mode
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
     "noEmit": true,
 
-    // Best practices
+    // Max strictness
     "strict": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
-
-    // Some stricter flags (disabled by default)
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-
-    // Some more
-    "allowJs": true,
-    "checkJs": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": true
   }
 }
