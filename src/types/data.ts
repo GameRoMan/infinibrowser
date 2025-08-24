@@ -1,27 +1,27 @@
 import type { RecipeType, UseType, LineageType } from "./items";
 
 export type ItemDataType = {
-  id: number;
-  text: string;
-  emoji: string;
-  use_count: number;
-  recipe_count: number;
-  depth: number;
+  readonly id: number;
+  readonly text: string;
+  readonly emoji: string;
+  readonly use_count: number;
+  readonly recipe_count: number;
+  readonly depth: number;
 };
 
 export type RecipesDataType = {
-  total: number;
-  recipes: RecipeType[];
+  readonly total: number;
+  readonly recipes: RecipeType[];
 };
 
 export type UsesDataType = {
-  total: number;
-  uses: UseType[];
+  readonly total: number;
+  readonly uses: UseType[];
 };
 
 export type LineageDataType = {
-  steps: LineageType;
-  missing: Record<string, string | "loop">;
+  readonly steps: LineageType;
+  readonly missing: Record<string, "loop" | (string & {})>;
 };
 
 export type CustomLineageDataType = LineageDataType;

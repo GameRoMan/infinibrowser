@@ -9,12 +9,15 @@ import type {
 
 type Params = Record<string, string | number | boolean | null | undefined>;
 
-const buildUrl = (path: string, params?: Params): URL => {
-  const API_URL = "https://infinibrowser.wiki/";
-  const url = new URL(path, API_URL);
+const buildUrl = (options: {
+  API_URL: string;
+  path: string;
+  params?: Params;
+}): URL => {
+  const url = new URL(`${options.API_URL}${options.path}`);
 
-  if (params) {
-    for (const [key, value] of Object.entries(params)) {
+  if (options.params) {
+    for (const [key, value] of Object.entries(options.params)) {
       if (value !== null && value !== undefined) {
         url.searchParams.append(key, String(value));
       }
@@ -24,104 +27,105 @@ const buildUrl = (path: string, params?: Params): URL => {
   return url;
 };
 
-const get = async <T>(options: {
-  path: string;
-  params?: Params;
-}): Promise<T> => {
-  const url = buildUrl(options.path, options.params);
-  const res = await fetch(url);
+export class Infinibrowser<TApiUrl extends string> {
+  public readonly API_URL: TApiUrl;
 
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status} - ${res.statusText}`);
+  constructor(config: { API_URL: TApiUrl }) {
+    this.API_URL = config.API_URL;
   }
 
-  return res.json() as Promise<T>;
-};
+  private async _get<T>(options: {
+    path: string;
+    params?: Params;
+  }): Promise<T> {
+    const url = buildUrl({ API_URL: this.API_URL, ...options });
 
-const post = async <T>(options: {
-  path: string;
-  params?: Params;
-  payload?: Record<string, unknown>;
-}): Promise<T> => {
-  const url = buildUrl(options.path, options.params);
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(options.payload ?? {}),
-  });
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+    }
 
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status} - ${res.statusText}`);
+    return response.json() as Promise<T>;
   }
 
-  return res.json() as Promise<T>;
-};
+  private async _post<T>(options: {
+    path: string;
+    params?: Params;
+    payload?: Record<string, unknown>;
+  }): Promise<T> {
+    const url = buildUrl({ API_URL: this.API_URL, ...options });
 
-export async function getItem(id: string) {
-  const path = "/api/item";
-  const params = { id };
-  const data = await get<ItemDataType>({ path, params });
-  return data;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(options.payload ?? {}),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+    }
+
+    return response.json() as Promise<T>;
+  }
+
+  async getItem(id: string) {
+    return this._get<ItemDataType>({ path: "/item", params: { id } });
+  }
+
+  async getRecipes(id: string, { offset = 0 }: { offset?: number } = {}) {
+    return this._get<RecipesDataType>({
+      path: "/recipes",
+      params: { id, offset },
+    });
+  }
+
+  async getUses(id: string, { offset = 0 }: { offset?: number } = {}) {
+    return this._get<UsesDataType>({ path: "/uses", params: { id, offset } });
+  }
+
+  async getLineage(id: string) {
+    return this._get<LineageDataType>({ path: "/recipe", params: { id } });
+  }
+
+  async getCustomLineage(id: string) {
+    return this._get<CustomLineageDataType>({
+      path: "/recipe/custom",
+      params: { id },
+    });
+  }
+
+  async optimizeLineage(id: string) {
+    return this._post<{
+      readonly id: string;
+      readonly before: number;
+      readonly after: number;
+    }>({
+      path: "/optimize-lineage",
+      params: { id },
+    });
+  }
+
+  async shareLineage(steps: ShareLineageType) {
+    const path = "/analytics/share";
+
+    const lastStep = steps[steps.length - 1];
+    if (!lastStep) throw new Error("Lineage must not be empty");
+
+    const resultElement = lastStep[2];
+    const payload = { id: resultElement.id, emoji: resultElement.emoji, steps };
+
+    return this._post<{ readonly id: string }>({ path, payload });
+  }
+
+  shareMultitargetLineage() {
+    throw new Error("Not implemented");
+  }
 }
 
-export async function getRecipes(id: string, offset = 0) {
-  const path = "/api/recipes";
-  const params = { id, offset };
-  const data = await get<RecipesDataType>({ path, params });
-  return data;
-}
+const API_URL = "https://infinibrowser.wiki/api";
+type API_URL = typeof API_URL;
 
-export async function getUses(id: string, offset = 0) {
-  const path = "/api/uses";
-  const params = { id, offset };
-  const data = await get<UsesDataType>({ path, params });
-  return data;
-}
-
-export async function getLineage(id: string) {
-  const path = "/api/recipe";
-  const params = { id };
-  const data = await get<LineageDataType>({ path, params });
-  return data;
-}
-
-export async function getCustomLineage(id: string) {
-  const path = "/api/recipe/custom";
-  const params = { id };
-  const data = await get<CustomLineageDataType>({ path, params });
-  return data;
-}
-
-export async function optimizeLineage(id: string) {
-  const path = "/api/optimize-lineage";
-  const params = { id };
-  const data = await post<{
-    id: string;
-    before: number;
-    after: number;
-  }>({ path, params });
-  return data;
-}
-
-export async function shareLineage(steps: ShareLineageType) {
-  const path = "/api/analytics/share";
-
-  const lastStep = steps[steps.length - 1];
-  if (!lastStep) throw new Error("Lineage must not be empty");
-
-  const resultElement = lastStep[2];
-  const payload: {
-    id: string;
-    emoji: string;
-    steps: ShareLineageType;
-  } = { id: resultElement.id, emoji: resultElement.emoji, steps };
-
-  const data = await post<{ id: string }>({ path, payload });
-  return data;
-}
-
-export async function shareMultitargetLineage() {
-  throw new Error("Not implemented");
-}
+export const ib = new Infinibrowser({ API_URL });

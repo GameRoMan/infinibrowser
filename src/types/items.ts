@@ -1,23 +1,23 @@
 export type ElementType = {
-  id: string;
-  emoji: string;
+  readonly id: string;
+  readonly emoji: string;
 };
 
-export type RecipeType = [ElementType, ElementType];
+export type RecipeType = readonly [ElementType, ElementType];
 
 export type UseType = {
-  pair: ElementType;
-  result: ElementType;
+  readonly pair: ElementType;
+  readonly result: ElementType;
 };
 
 export type StepType = {
-  a: ElementType;
-  b: ElementType;
-  result: ElementType;
+  readonly a: ElementType;
+  readonly b: ElementType;
+  readonly result: ElementType;
 };
 
-export type LineageType = StepType[];
+export type LineageType = readonly StepType[];
 
-export type ShareStepType = [ElementType, ElementType, ElementType];
+export type ShareStepType = readonly [ElementType, ElementType, ElementType];
 
-export type ShareLineageType = ShareStepType[];
+export type ShareLineageType = readonly ShareStepType[];

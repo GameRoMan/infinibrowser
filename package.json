@@ -1,6 +1,6 @@
 {
   "name": "infinibrowser",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A TypeScript API wrapper for the Infinibrowser",
   "type": "module",
   "main": "src/index.ts",
