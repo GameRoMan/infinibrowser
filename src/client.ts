@@ -27,48 +27,57 @@ const buildUrl = (options: {
   return url;
 };
 
-export class Infinibrowser<TApiUrl extends string> {
+export class Infinibrowser<TApiUrl extends string, TTimeOut extends number> {
   public readonly API_URL: TApiUrl;
+  private readonly timeout: TTimeOut;
 
-  constructor(config: { API_URL: TApiUrl }) {
+  constructor(config: { API_URL: TApiUrl; timeout: TTimeOut }) {
     this.API_URL = config.API_URL;
+    this.timeout = config.timeout;
   }
 
-  private async _get<T>(options: {
-    path: string;
-    params?: Params;
-  }): Promise<T> {
-    const url = buildUrl({ API_URL: this.API_URL, ...options });
+  private async _fetchWithTimeout<T>(
+    input: RequestInfo | URL,
+    init: RequestInit = {}
+  ): Promise<T> {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), this.timeout);
 
-    const response = await fetch(url, {
+    try {
+      const response = await fetch(input, {
+        ...init,
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+      }
+
+      return response.json() as Promise<T>;
+    } finally {
+      clearTimeout(id);
+    }
+  }
+
+  private async _get<T>(options: { path: string; params?: Params }) {
+    const url = buildUrl({ API_URL: this.API_URL, ...options });
+    return this._fetchWithTimeout<T>(url, {
       method: "GET",
       headers: { Accept: "application/json" },
     });
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status} - ${response.statusText}`);
-    }
-
-    return response.json() as Promise<T>;
   }
 
   private async _post<T>(options: {
     path: string;
     params?: Params;
     payload?: Record<string, unknown>;
-  }): Promise<T> {
+  }) {
     const url = buildUrl({ API_URL: this.API_URL, ...options });
-
-    const response = await fetch(url, {
+    return this._fetchWithTimeout<T>(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(options.payload ?? {}),
     });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status} - ${response.statusText}`);
-    }
-
-    return response.json() as Promise<T>;
   }
 
   async getItem(id: string) {
@@ -128,4 +137,4 @@ export class Infinibrowser<TApiUrl extends string> {
 const API_URL = "https://infinibrowser.wiki/api";
 type API_URL = typeof API_URL;
 
-export const ib = new Infinibrowser({ API_URL });
+export const ib = new Infinibrowser({ API_URL, timeout: 1000 });

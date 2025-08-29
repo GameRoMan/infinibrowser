@@ -1,6 +1,6 @@
 {
   "name": "infinibrowser",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A TypeScript API wrapper for the Infinibrowser",
   "type": "module",
   "main": "src/index.ts",
@@ -34,9 +34,6 @@
   ],
   "author": "GameRoMan",
   "license": "MIT",
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
   "peerDependencies": {
     "typescript": "^5.9.2"
   }
